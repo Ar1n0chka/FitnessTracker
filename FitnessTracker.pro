@@ -1,4 +1,4 @@
-QT += core gui widgets sql
+QT += core gui widgets #sql
 
 CONFIG += c++17
 
@@ -10,12 +10,12 @@ INCLUDEPATH += headers
 SOURCES += \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/database.cpp \
+    #src/database.cpp \
     src/addfooddialog.cpp
 
 HEADERS += \
     headers/mainwindow.h \
-    headers/database.h \
+   # headers/database.h \
     headers/addfooddialog.h
 
 FORMS += \

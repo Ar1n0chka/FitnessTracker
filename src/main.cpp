@@ -1,15 +1,15 @@
 #include "mainwindow.h"
-#include "database.h"       // Добавляем этот инклуд
+//#include "database.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    // Инициализируем базу данных перед открытием окна
-    if (!DatabaseManager::initDatabase()) {
-        // Можно добавить вывод ошибки, если база не открылась
-    }
+    // // Инициализируем базу данных перед открытием окна
+    // if (!DatabaseManager::initDatabase()) {
+    //     // Можно добавить вывод ошибки, если база не открылась
+    // }
 
     MainWindow w;
     w.show();
