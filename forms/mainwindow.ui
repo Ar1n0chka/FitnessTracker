@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <widget class="QWidget" name="tabNutrition">
+       <attribute name="title">
+        <string>Дневник питания</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layoutNutri">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QCalendarWidget" name="calendarWidget"/>
+          </item>
+          <item>
+           <widget class="QTreeWidget" name="foodTree">
+            <column><property name="text"><string>Продукт</string></property></column>
+            <column><property name="text"><string>Вес</string></property></column>
+            <column><property name="text"><string>Ккал</string></property></column>
+            <column><property name="text"><string>Б</string></property></column>
+            <column><property name="text"><string>Ж</string></property></column>
+            <column><property name="text"><string>У</string></property></column>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblTotal">
+          <property name="text"><string>Итого: 0 ккал</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnAddFood"> [cite: 5]
+          <property name="text">
+           <string>Добавить прием пищи</string> [cite: 5]
+          </property>
+         </widget> [cite: 5]
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabWorkout"> [cite: 7]
+       <attribute name="title">
+        <string>Тренировки</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layoutWork"> [cite: 7]
+        <item>
+         <widget class="QTableWidget" name="workoutTable"> [cite: 7]
+          <property name="columnCount">
+           <number>4</number> [cite: 7]
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnAddWorkout"> [cite: 8]
+          <property name="text">
+           <string>Записать тренировку</string> [cite: 8]
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget> [cite: 9]
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+</ui>
