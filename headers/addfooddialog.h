@@ -15,15 +15,20 @@ public:
 
 private slots:
     void onSearchTextChanged(const QString &text);
+    void onProductSelected();
     void onAddClicked();
-    void onTableClicked(int row, int col); // Чтобы выбрать продукт кликом
+    void updateNutritionInfo(double weight);   // Обновляет расчёт БЖУ
+    void onCreateFoodClicked();
 
 private:
     Ui::AddFoodDialog *ui;
     QDate targetDate;
 
-    // Временное хранение выбранного БЖУ на 100г
-    double selKcal = 0, selProt = 0, selFat = 0, selCarbs = 0;
+    // Значения выбранного продукта на 100 г
+    double selectedKcal  = 0.0;
+    double selectedProt  = 0.0;
+    double selectedFat   = 0.0;
+    double selectedCarbs = 0.0;
 };
 
 #endif // ADDFOODDIALOG_H

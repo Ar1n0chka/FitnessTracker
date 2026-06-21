@@ -7,58 +7,80 @@
 #include <QDebug>
 #include <QStandardPaths>
 #include <QDate>
-#include <QVariant>
+#include <QDir>
+#include <QFile>
 
-class DatabaseManager {
+class DatabaseManager
+{
 public:
-    static bool initDatabase() {
-        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-        QString path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-        db.setDatabaseName(path + "/fitness_tracker.db");
+    // Инициализация базы данных (вызывать один раз при запуске приложения)
+    static bool initDatabase();
 
-        if (!db.open()) return false;
+    // Получение подключения к БД (для использования в других классах)
+    static QSqlDatabase database();
 
-        QSqlQuery query;
-        // 1. База продуктов (добавим пару тестовых продуктов сразу)
-        query.exec("CREATE TABLE IF NOT EXISTS food_library ("
-                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                   "name TEXT, calories REAL, protein REAL, fat REAL, carbs REAL)");
+    // ======================= Пользователь =======================
+    static bool createDefaultUser();                    // Создаёт пользователя с id = 1, если его нет
+    static int getCurrentUserId();                      // Возвращает ID текущего пользователя (пока 1)
 
-        // Проверка: если таблица пустая, добавим тестовые данные
-        query.exec("SELECT count(*) FROM food_library");
-        if (query.next() && query.value(0).toInt() == 0) {
-            query.exec("INSERT INTO food_library (name, calories, protein, fat, carbs) VALUES "
-                       "('Куриная грудка', 113, 23.6, 1.9, 0.4),"
-                       "('Гречка отварная', 101, 3.8, 1.1, 20.5),"
-                       "('Яблоко', 52, 0.3, 0.2, 13.8),"
-                       "('Творог 5%', 121, 17.2, 5.0, 1.8)");
-        }
+    // ======================= Продукты =======================
+    static bool addFoodToLibrary(const QString &name, double calories, double protein, double fat, double carbs);
+    static bool foodExists(const QString &name);
+    static QSqlQuery getFoodBySearch(const QString &searchText);
 
-        // 2. Дневник питания (расширенный)
-        // meal_type: 1=Завтрак, 2=Обед, 3=Ужин, 4=Перекус
-        query.exec("CREATE TABLE IF NOT EXISTS nutrition_log ("
-                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                   "date_entry TEXT, "    // Формат YYYY-MM-DD
-                   "meal_type INTEGER, "
-                   "food_name TEXT, "
-                   "weight REAL, "
-                   "kcal REAL, protein REAL, fat REAL, carbs REAL)");
+    // ======================= Дневник питания =======================
+    static bool addNutritionEntry(const QDate &date, int mealType, const QString &foodName,
+                                  double weightG, double kcal, double protein, double fat, double carbs);
 
-        return true;
-    }
+    static QSqlQuery getDailyNutrition(const QDate &date);   // Для загрузки в дерево
 
-    // Метод добавления записи
-    static void addEntry(QDate date, int mealType, QString name, double weight, double k, double p, double f, double c) {
-        QSqlQuery query;
-        query.prepare("INSERT INTO nutrition_log (date_entry, meal_type, food_name, weight, kcal, protein, fat, carbs) "
-                      "VALUES (:date, :type, :name, :w, :k, :p, :f, :c)");
-        query.bindValue(":date", date.toString("yyyy-MM-dd"));
-        query.bindValue(":type", mealType);
-        query.bindValue(":name", name);
-        query.bindValue(":w", weight);
-        query.bindValue(":k", k); query.bindValue(":p", p); query.bindValue(":f", f); query.bindValue(":c", c);
-        query.exec();
-    }
+    static QMap<QString, double> getDailyTotals(const QDate &date); // kcal, protein, fat, carbs
+
+    // ======================= Тренировки =======================
+    static int createWorkoutSession(const QDate &date, const QString &workoutName = "",
+                                    int durationMin = 0, double totalKcal = 0.0, const QString &notes = "");
+    static bool addSetToWorkout(int workoutId, const QString &exerciseName, int reps, double weightKg);
+    static int getNextSetNumber(int workoutId, const QString &exerciseName);
+
+    // ======================= Дневная активность =======================
+    static bool saveDailyActivity(const QDate &date, int steps = 0, double activeCalories = 0.0,
+                                  double sleepHours = 0.0, const QString &sleepQuality = "");
+
+    // ======================= AI Советы =======================
+    static bool saveAIPrediction(const QDate &date, const QString &predictionType,
+                                 const QString &content, const QString &modelVersion = "unknown",
+                                 double confidence = 1.0, const QString &inputSummary = "");
+
+    static QSqlQuery getAIPredictionsForDate(const QDate &date);
+    static void populateDefaultFoods();
+    static bool deleteNutritionEntry(int id);
+    static bool updateNutritionEntryWeight(int id, double newWeightG);
+    static bool createUsersTable();
+    static int addUser(const QString &nickname); // Возвращает ID нового пользователя
+    static int getUserId(const QString &nickname); // Поиск пользователя
+    static bool saveMeasurement(int userId, const QDate &date, double weight, double chest, double waist, double hips, double neck);
+    static bool saveBodyMeasurements(int userId, double weight, double height, double neck, double waist, double hips, double bmi, double fat);
+    static void setCurrentUserId(int id);
+    static QString getUserName(int userId);
+    static QSqlQuery getMeasurementHistory();
+    static int getWorkoutId(const QDate &date);
+    static int getOrCreateWorkout(const QDate &date);
+    static QSqlQuery getTodayWorkoutExercises(int workoutId);
+    static int createNewWorkout(const QDate &date, const QString &workoutName);
+    static QSqlQuery getWorkoutsForDate(const QDate &date);
+    static QSqlQuery getDailyActivity(const QDate &date);
+    static void populateDefaultExercises();
+    static QSqlQuery getExercisesList();
+    static QString getExerciseStats(const QString &exerciseName);
+    static void getWeeklyStats(double &avgKcal, double &avgProt, int &workoutCount, int &avgSteps);
+
+
+
+
+private:
+    static bool createTables();
+    static QString getDatabasePath();
+    static bool ensureDatabaseDirectory();
 };
 
 #endif // DATABASE_H
